@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import GtfsRealtimeBindings = require('gtfs-realtime-bindings');
-import fs = require(fs);
+import fs = require('fs');
 
 @Injectable({
   providedIn: 'root'
