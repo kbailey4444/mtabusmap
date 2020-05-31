@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import fs = require('fs');
-import csv = require('csv-parser');
+const fs = require('fs');
+const csv = require('csv-parser');
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ export class GtfsService {
                         'calendar_dates.txt', 'shapes.txt', 'transfers.txt', 'pathways.txt'];
     const dataLocation = '../../../data/google_transit/';
     fileNames.forEach((filename) => {
-      const obj = JSON.parse(this.convertCsv(`${dataLocation}${filename}`));
+      const obj = this.convertCsv(`${dataLocation}${filename}`);
       if (filename === 'agency.txt') {
         this.agency = obj;
       } else if (filename === 'stops.txt') {
@@ -40,8 +40,8 @@ export class GtfsService {
     });
   }
 
-  private covertCsv(filelocation: string): object[] {
-    const csvResult: object[];
+  private convertCsv(filelocation: string): object[] {
+    let csvResult: object[];
     fs.createReadStream(filelocation)
       .pipe(csv())
       .on('data', (data) => {
@@ -50,6 +50,7 @@ export class GtfsService {
       .on('end', () => {
         return csvResult;
       });
+    return csvResult;
   }
 
   getAgency(): object {
