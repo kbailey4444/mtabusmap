@@ -1,42 +1,32 @@
 import { Injectable } from '@angular/core';
-const GtfsRealtimeBindings = require('gtfs-realtime-bindings');
-const fs = require('fs');
+import { HttpClient } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, retry, map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RealtimeService {
 
-  constructor(private vehiclePositions: any[], private tripUpdates: any[]) {
-    fs.readFile('../../../data/testVehicleFile.json', 'utf8', (err, vehicleData) => {
-      if (err) { throw err; }
-      const vehicles = JSON.parse(vehicleData);
-      const vehicleFeed = GtfsRealtimeBindings.transit_realtime.FeedMessage.create(vehicles);
-      vehicleFeed.entity.forEach((entity) => {
+  constructor(private http: HttpClient) {}
+
+  getVehicles(): Observable<any> {
+    const vehicles =
+    this.http.get<any>('assets/data/testVehicleFile.json').pipe(map(
+      (data => {
+      const vehiclesDict = new Object();
+      data.entity.forEach((entity) => {
         if (entity.vehicle) {
-          const vehiclePosition = GtfsRealtimeBindings.transit_realtime.VehiclePosition.create(entity);
-          this.vehiclePositions.push(vehiclePosition);
+          vehiclesDict[entity.id] = entity;
         }
       });
-    });
-    fs.readFile('../../../data/testTripFile.json', 'utf8', (err, tripData) => {
-      if (err) { throw err; }
-      const trips = JSON.parse(tripData);
-      const tripFeed = GtfsRealtimeBindings.transit_realtime.FeedMessage.create(trips);
-      tripFeed.entity.forEach((entity) => {
-        if (entity.tripUpdate) {
-          const tripUpdate = GtfsRealtimeBindings.transit_realtime.TripUpdate.create(entity);
-          this.tripUpdates.push(tripUpdate);
-        }
-      });
-    });
+      return vehiclesDict;
+      })
+    ));
+    return vehicles;
   }
 
-  getVehiclePositions() {
-    return this.vehiclePositions;
-  }
-
-  getTripUpdates() {
-    return this.tripUpdates;
+  getTripUpdates(): Observable<any> {
+    return  this.http.get<any>('assets/data/testTripFile.json');
   }
 }
