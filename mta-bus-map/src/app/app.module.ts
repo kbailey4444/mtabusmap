@@ -6,12 +6,16 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MapComponent } from './map/map.component';
 import { RoutesComponent } from './routes/routes.component';
+import { FilterComponent } from './filter/filter.component';
+import { SelectionComponent } from './selection/selection.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MapComponent,
-    RoutesComponent
+    RoutesComponent,
+    FilterComponent,
+    SelectionComponent
   ],
   imports: [
     BrowserModule,
